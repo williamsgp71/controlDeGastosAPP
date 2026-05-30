@@ -133,3 +133,31 @@ Instala la aplicación en tu dispositivo:
   ```powershell
   & "C:\Users\Desktop\AppData\Local\Android\Sdk\platform-tools\adb.exe" -s a94227f install app/build/outputs/apk/debug/app-debug.apk
   ```
+
+---
+
+## 🧹 Apagar y Liberar Recursos de la Computadora
+
+Cuando termines tu sesión de desarrollo y quieras liberar memoria RAM y recursos de tu computadora, ejecuta estos comandos rápidos en la consola del IDE:
+
+### 1. Apagar los Demonios de Gradle (Libera 1 GB a 2 GB de memoria RAM)
+Gradle mantiene procesos en segundo plano para agilizar futuras compilaciones, lo que puede consumir bastantes recursos. Puedes cerrarlos por completo ejecutando:
+
+```powershell
+$env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot"
+.\gradlew.bat --stop
+```
+
+### 2. Detener el Servidor de ADB (Libera puertos USB y de red)
+Cierra el servidor de depuración de Android que interactúa con tu teléfono o emulador:
+
+```powershell
+& "C:\Users\Desktop\AppData\Local\Android\Sdk\platform-tools\adb.exe" kill-server
+```
+
+### 3. Apagar el Emulador Android
+Si tienes un emulador en ejecución y deseas cerrarlo forzosamente desde la terminal:
+
+```powershell
+Stop-Process -Name "emulator" -Force
+```
