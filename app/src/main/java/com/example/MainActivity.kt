@@ -932,6 +932,102 @@ fun DashboardScreen(
     var showBudgetDialog by remember { mutableStateOf(false) }
     var dashboardSection by remember { mutableStateOf("resumen") } // "resumen", "operaciones", "historial"
 
+    val isUpdateAvailable by viewModel.isUpdateAvailable.collectAsStateWithLifecycle()
+    val latestVersionName by viewModel.latestVersionName.collectAsStateWithLifecycle()
+    val updateNotes by viewModel.updateNotes.collectAsStateWithLifecycle()
+
+    if (isUpdateAvailable) {
+        Dialog(onDismissRequest = { viewModel.dismissUpdateDialog() }) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = CosmicCardBg),
+                shape = RoundedCornerShape(24.dp),
+                border = BorderStroke(1.dp, CosmicBorder),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.SystemUpdate,
+                        contentDescription = "Actualización Disponible",
+                        tint = CosmicAccentPurple,
+                        modifier = Modifier.size(54.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "¡Nueva Actualización!",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = CosmicTextLight
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Versión disponible: v$latestVersionName",
+                        fontSize = 13.sp,
+                        color = CosmicAccentGreen,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // Release notes card
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = CosmicDarkBg),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(max = 150.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                text = "Novedades:",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = CosmicTextLight
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = updateNotes,
+                                fontSize = 11.sp,
+                                color = CosmicTextMuted,
+                                lineHeight = 15.sp
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { viewModel.dismissUpdateDialog() },
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = CosmicTextMuted),
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text("Más tarde")
+                        }
+                        Button(
+                            onClick = {
+                                viewModel.startUpdateDownload()
+                                viewModel.dismissUpdateDialog()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = CosmicAccentPurple),
+                            modifier = Modifier.weight(1.2f),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text("Actualizar", color = Color.White, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -2568,6 +2664,56 @@ fun ConectividadStatusSub(viewModel: ExpenseViewModel) {
                         uncheckedTrackColor = CosmicCardBg
                     )
                 )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text("Actualizaciones de la Aplicación", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = CosmicTextLight)
+        Text("Busca nuevas versiones de la aplicación", fontSize = 10.sp, color = CosmicTextMuted)
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        val isChecking by viewModel.isCheckingForUpdates.collectAsStateWithLifecycle()
+        val updateError by viewModel.updateError.collectAsStateWithLifecycle()
+        val appVersion = viewModel.getAppVersionName()
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, CosmicBorder, RoundedCornerShape(12.dp)),
+            colors = CardDefaults.cardColors(containerColor = CosmicDarkBg)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Versión Instalada: v$appVersion", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = CosmicTextLight)
+                    Text(
+                        text = if (isChecking) "Buscando actualizaciones..." else if (updateError != null) updateError!! else "Tu aplicación se encuentra al día.",
+                        fontSize = 10.sp,
+                        color = CosmicTextMuted
+                    )
+                }
+
+                Button(
+                    onClick = { viewModel.checkForUpdates() },
+                    colors = ButtonDefaults.buttonColors(containerColor = CosmicAccentPurple),
+                    shape = RoundedCornerShape(10.dp),
+                    enabled = !isChecking,
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    modifier = Modifier.height(36.dp)
+                ) {
+                    if (isChecking) {
+                        CircularProgressIndicator(modifier = Modifier.size(12.dp), color = Color.White, strokeWidth = 1.5.dp)
+                    } else {
+                        Text("Buscar", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
             }
         }
     }

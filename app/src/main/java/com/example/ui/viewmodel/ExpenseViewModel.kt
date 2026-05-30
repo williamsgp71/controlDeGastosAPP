@@ -9,6 +9,7 @@ import com.example.data.model.Category
 import com.example.data.model.ExpenseTransaction
 import com.example.data.model.User
 import com.example.data.repository.AppRepository
+import com.example.data.UpdateService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -365,4 +366,57 @@ class ExpenseViewModel(application: Application) : AndroidViewModel(application)
         namePercentList.sortByDescending { it.second }
         namePercentList
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // --- SISTEMA DE ACTUALIZACIONES AUTO-HOSPEDADO (OTA) ---
+    private val updateService by lazy { UpdateService(application) }
+    
+    val isUpdateAvailable = MutableStateFlow(false)
+    val latestVersionName = MutableStateFlow("")
+    val updateNotes = MutableStateFlow("")
+    val updateDownloadUrl = MutableStateFlow("")
+    val isCheckingForUpdates = MutableStateFlow(false)
+    val updateError = MutableStateFlow<String?>(null)
+
+    fun getAppVersionName(): String {
+        return try {
+            val pInfo = getApplication<Application>().packageManager.getPackageInfo(getApplication<Application>().packageName, 0)
+            pInfo.versionName ?: "1.0.0"
+        } catch (e: Exception) {
+            "1.0.0"
+        }
+    }
+
+    fun checkForUpdates() {
+        viewModelScope.launch {
+            isCheckingForUpdates.value = true
+            updateError.value = null
+            isUpdateAvailable.value = false
+            
+            val currentVersion = getAppVersionName()
+            val release = updateService.checkLatestRelease(currentVersion)
+            
+            if (release != null) {
+                if (release.isNewer) {
+                    latestVersionName.value = release.versionName
+                    updateNotes.value = release.description
+                    updateDownloadUrl.value = release.downloadUrl
+                    isUpdateAvailable.value = true
+                }
+            } else {
+                updateError.value = "No se encontraron nuevas versiones o hubo un error de conexión."
+            }
+            isCheckingForUpdates.value = false
+        }
+    }
+
+    fun startUpdateDownload() {
+        val url = updateDownloadUrl.value
+        if (url.isNotBlank()) {
+            updateService.downloadAndInstallApk(url)
+        }
+    }
+    
+    fun dismissUpdateDialog() {
+        isUpdateAvailable.value = false
+    }
 }
