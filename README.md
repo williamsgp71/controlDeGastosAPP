@@ -92,6 +92,13 @@ Start-Process -FilePath "C:\Users\Desktop\AppData\Local\Android\Sdk\emulator\emu
 
 *Espera unos segundos a que la pantalla del emulador cargue el sistema operativo completamente.*
 
+> [!TIP]
+> **¿El emulador se queda con la pantalla en negro o congelado?**
+> Si el dispositivo virtual arranca pero se queda en negro, se debe a que Android está cargando un estado anterior congelado (*snapshot*). Para solucionarlo, realiza un inicio limpio (**Cold Boot**) ejecutando el siguiente comando:
+> ```powershell
+> & "C:\Users\Desktop\AppData\Local\Android\Sdk\emulator\emulator.exe" -avd medium_phone -no-snapshot-load -no-boot-anim
+> ```
+
 ### 4. Desplegar e Instalar el APK en el Emulador
 Una vez que el emulador esté encendido (puedes verificar si está listo con `& "C:\Users\Desktop\AppData\Local\Android\Sdk\platform-tools\adb.exe" devices`), instala y arranca la aplicación:
 
