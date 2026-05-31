@@ -487,6 +487,8 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
 
     val registerError by viewModel.registerError.collectAsStateWithLifecycle()
     val registerSuccess by viewModel.registerSuccess.collectAsStateWithLifecycle()
@@ -595,13 +597,22 @@ fun RegisterScreen(
                     placeholder = { Text("••••••••", color = CosmicTextMuted) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = CosmicTextLight,
                         unfocusedTextColor = CosmicTextLight,
                         focusedBorderColor = CosmicAccentPurple,
                         unfocusedBorderColor = CosmicBorder
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = "Toggle password visibility",
+                                tint = CosmicTextMuted
+                            )
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -620,13 +631,22 @@ fun RegisterScreen(
                     placeholder = { Text("••••••••", color = CosmicTextMuted) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = CosmicTextLight,
                         unfocusedTextColor = CosmicTextLight,
                         focusedBorderColor = CosmicAccentPurple,
                         unfocusedBorderColor = CosmicBorder
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
+                            Icon(
+                                imageVector = if (showConfirmPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = "Toggle confirm password visibility",
+                                tint = CosmicTextMuted
+                            )
+                        }
+                    }
                 )
 
                 // Feedback
@@ -679,6 +699,9 @@ fun ChangePasswordScreen(
     var oldPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmNewPassword by remember { mutableStateOf("") }
+    var showOldPassword by remember { mutableStateOf(false) }
+    var showNewPassword by remember { mutableStateOf(false) }
+    var showConfirmNewPassword by remember { mutableStateOf(false) }
 
     val changePasswordStatus by viewModel.changePasswordStatus.collectAsStateWithLifecycle()
 
@@ -773,7 +796,7 @@ fun ChangePasswordScreen(
                 OutlinedTextField(
                     value = oldPassword,
                     onValueChange = { oldPassword = it },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (showOldPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -781,7 +804,16 @@ fun ChangePasswordScreen(
                         unfocusedTextColor = CosmicTextLight,
                         focusedBorderColor = CosmicAccentPurple,
                         unfocusedBorderColor = CosmicBorder
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { showOldPassword = !showOldPassword }) {
+                            Icon(
+                                imageVector = if (showOldPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = "Toggle old password visibility",
+                                tint = CosmicTextMuted
+                            )
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -797,7 +829,7 @@ fun ChangePasswordScreen(
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (showNewPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -805,7 +837,16 @@ fun ChangePasswordScreen(
                         unfocusedTextColor = CosmicTextLight,
                         focusedBorderColor = CosmicAccentPurple,
                         unfocusedBorderColor = CosmicBorder
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { showNewPassword = !showNewPassword }) {
+                            Icon(
+                                imageVector = if (showNewPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = "Toggle new password visibility",
+                                tint = CosmicTextMuted
+                            )
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -821,7 +862,7 @@ fun ChangePasswordScreen(
                 OutlinedTextField(
                     value = confirmNewPassword,
                     onValueChange = { confirmNewPassword = it },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (showConfirmNewPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -829,7 +870,16 @@ fun ChangePasswordScreen(
                         unfocusedTextColor = CosmicTextLight,
                         focusedBorderColor = CosmicAccentPurple,
                         unfocusedBorderColor = CosmicBorder
-                    )
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = { showConfirmNewPassword = !showConfirmNewPassword }) {
+                            Icon(
+                                imageVector = if (showConfirmNewPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                contentDescription = "Toggle confirm new password visibility",
+                                tint = CosmicTextMuted
+                            )
+                        }
+                    }
                 )
 
                 changePasswordStatus?.let {
