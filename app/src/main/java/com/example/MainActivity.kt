@@ -392,29 +392,6 @@ fun LoginScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // Shield Decoupled API footer decoration
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = Icons.Default.Security,
-                contentDescription = null,
-                tint = CosmicAccentGreen,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = "API Desacoplada con Auth JWT (Segura para Apps Móviles)",
-                color = CosmicTextMuted,
-                fontSize = 11.sp,
-                fontFamily = FontFamily.Monospace
-            )
-        }
-
         Spacer(modifier = Modifier.height(20.dp))
     }
 
